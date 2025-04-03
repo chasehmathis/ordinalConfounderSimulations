@@ -23,10 +23,9 @@ options(mc.cores = parallel::detectCores())
 source("../funs.R")
 
 # USE GPU 
-SIMS <- matrix(ncol = 19, nrow = nsim)
-colnames(SIMS) <- c("ATEBoot00", "ATEBoot01", "ATENaive", "RegressionTrue", "P2SLS",
-                    "ATEBoot10", "ATEBoot11", "ATEBoot12", "PartialCorrTYU", "confounding", "ATEBoot00pval", "ATEBoot01pval",
-                    "ATENaivepval", "ATEBoot10pval", "ATEBoot11pval", "ATEBoot12pval", "ATE2pval", "ground_truthpval", "bTY")
+SIMS <- matrix(ncol = 9, nrow = nsim)
+colnames(SIMS) <- c("ATEBayesBootstrap", "ATENaive", "RegressionTrue", "PartialCorrTYU", "confounding", "ATEBayesBootstrappval", "ATENaivepval",
+                    "ground_truthpval", "bTY")
 
 for(i in 1:nsim){
   
@@ -155,8 +154,6 @@ for(i in 1:nsim){
   
   if(i %% 100 == 0 || i == 10){
     data.frame(SIMS) |> 
-
-    data.frame(SIMS) |> 
-      write_csv(paste0("SIMStype1error/SIMS", "-", n, "-", seed, c, ".csv"))
+      write_csv(paste0("SIMStype1error/SIMS", "-", n, "-", seed, ".csv"))
   }
 }
