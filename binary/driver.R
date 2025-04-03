@@ -23,10 +23,9 @@ library(MASS)
 options(mc.cores = parallel::detectCores())
 source("../funs.R")
 
-SIMS <- matrix(ncol = 19, nrow = nsim)
-colnames(SIMS) <- c("ATEBoot00", "ATEBoot01", "ATENaive", "RegressionTrue", "P2SLS",
-                    "ATEBoot10", "ATEBoot11", "ATEBoot12", "PartialCorrTYU", "confounding", "ATEBoot00pval", "ATEBoot01pval",
-                    "ATENaivepval", "ATEBoot10pval", "ATEBoot11pval", "ATEBoot12pval", "ATE2pval", "ground_truthpval", "bTY")
+SIMS <- matrix(ncol = 9, nrow = nsim)
+colnames(SIMS) <- c("ATEBayesBootstrap", "ATENaive", "RegressionTrue", "PartialCorrTYU", "confounding", "ATEBayesBootstrappval", "ATENaivepval",
+                    "ground_truthpval", "bTY")
 
 for(i in 1:nsim){
 
@@ -135,76 +134,27 @@ for(i in 1:nsim){
     
 
     
-    
-    # have another normal proxy 0
-    what_mod10 <- lm(z_1 ~ Z + T + U_obs + Y, sub_data)
-    coefs <- what_mod10$coefficients
-    what10 <- as.matrix(cbind(1,data[fold,c("Z", "T", "U_obs")],1)) %*% coefs
-    data[fold, 'what10'] <- what10
-    
-    
-    
-    what_mod11 <- lm(W ~  z + T + U_obs + Y, sub_data)
-    coefs <- what_mod11$coefficients
-    what11 <- as.matrix(cbind(1,data[fold,c("z", "T", "U_obs")],1)) %*% coefs
-    data[fold, 'what_mod11'] <- what11
-
-    what_mod12 <- lm(W ~ T + U_obs + Y, sub_data)
-    coefs <- what_mod12$coefficients
-    what12 <- as.matrix(cbind(1,data[fold,c( "T", "U_obs")],1)) %*% coefs
-    data[fold, 'what_mod12'] <- what12
-
-    
-    what_mod2 <- lm(W ~ T + Z + Y, sub_data)
-    coefs <- what_mod2$coefficients
-    what2 <- as.matrix(cbind(1,data[fold,c( "T", "Z")],1)) %*% coefs
-    data[fold, 'what2'] <- what2
   }
   # only one proxy
   mod <- glm(Y ~ what00 + T, data, family = binomial())
   ATEboot00 <- coef(mod)['T']
   ATEboot00pval <- summary(mod)$coefficients['T', 'Pr(>|z|)']
   
-  # mod <- glm(Y ~ what01 + T, data, family = binomial())
-  # ATEboot01 <- coef(mod)['T']
-  # ATEboot01pval <- summary(mod)$coefficients['T', 'Pr(>|z|)']
 
   mod <- glm(Y ~ factor(U_obs, ordered = TRUE) + T, data, family = binomial())
   ATENaive <- coef(mod)['T']
   ATENaivepval <- summary(mod)$coefficients['T', 'Pr(>|z|)']
   
-  
-  # have another normal proxy
-  ATEboot10 <- coef(glm(Y ~ what10 + T, data, family = binomial()))['T']
-  ATEboot10pval <- summary(glm(Y ~ what10 + T, data, family = binomial()))$coefficients['T', 'Pr(>|z|)']
-  
-  ATEboot11 <- coef(glm(Y ~ what11 + T, data, family = binomial()))['T']
-  ATEboot11pval <- summary(glm(Y ~ what11 + T, data, family = binomial()))$coefficients['T', 'Pr(>|z|)']
-  
-  
-  ATEboot12 <- coef(glm(Y ~ what12 + T, data, family = binomial()))['T']
-  ATEboot12pval <- summary(glm(Y ~ what12 + T, data, family = binomial()))$coefficients['T', 'Pr(>|z|)']
-  
-
-  # if had two normal proxies
-  ATE2 <- coef(glm(Y ~ what2 + T, data, family = binomial()))['T']
-  ATE2pval <- summary(glm(Y ~ what2 + T, data, family = binomial()))$coefficients['T', 'Pr(>|z|)']
   ground_truth <-  coef(glm(Y ~ T + U, data = data, family = binomial))['T']
   ground_truthpval <- summary(glm(Y ~ T + U, data = data, family = binomial))$coefficients['T', 'Pr(>|z|)']
   
-  SIMS[i, "ATEBoot00"] <- ATEboot00; #SIMS[i, "ATEBoot01"] <- ATEboot01; 
+  SIMS[i, "ATEBayesBootstrap"] <- ATEboot00; 
   SIMS[i, "ATENaive"] <- ATENaive; 
-  SIMS[i, "ATEBoot10"] <- ATEboot10; SIMS[i, "ATEBoot11"] <- ATEboot11; 
-  SIMS[i, "ATEBoot12"] <- ATEboot12; 
   SIMS[i, "RegressionTrue"] <- ground_truth; 
-  SIMS[i, "P2SLS"] <- ATE2; 
   SIMS[i, "PartialCorrTYU"] <- partial_corr
   SIMS[i, "confounding"] <- confounding_high;
-  SIMS[i, "ATEBoot00pval"] <- ATEboot00pval;
+  SIMS[i, "ATEBayesBootstrappval"] <- ATEboot00pval;
   SIMS[i, "ATENaivepval"] <- ATENaivepval; 
-  SIMS[i, "ATEBoot10pval"] <- ATEboot10pval; SIMS[i, "ATEBoot11pval"] <- ATEboot11pval; 
-  SIMS[i, "ATEBoot12pval"] <- ATEboot12pval; 
-  SIMS[i, "ATE2pval"] <- ATE2pval; 
   SIMS[i, "ground_truthpval"] <- ground_truthpval
   SIMS[i,"bTY"] <- bTY
 

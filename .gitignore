@@ -47,3 +47,9 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# Generated folders
+figs/
+SIMS/
+SIMStype1error/
+

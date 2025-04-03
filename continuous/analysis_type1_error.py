@@ -7,77 +7,30 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import bootstrap
 
-parent_dir = 'SIMSbTY0_ordered'
+parent_dir = 'SIMStype1error'
 
 data_lst = []
 for f in os.listdir(parent_dir):
     if "SIMS" in f:
         seed = f.split(".")[0].split('-')[-1]
         nsim = f.split('.')[0].split('-')[-2]
-        if "c." in f:
-            data = pd.read_csv(os.path.join(parent_dir, f))
-            data['seed'] = seed
-            data['crossfit'] = True
-            data['nsim'] = nsim
-            data_lst.append(data)
 
-        else:
-            data = pd.read_csv(os.path.join(parent_dir, f))
-            data['seed'] = seed
-            data['crossfit'] = False
-            data['nsim'] = nsim
-            data_lst.append(data)
+        data = pd.read_csv(os.path.join(parent_dir, f))
+        data['seed'] = seed
+        data['nsim'] = nsim
+        data_lst.append(data)
 
 
 
-SIMS = pd.concat(data_lst)
-df = SIMS.copy()
+df = pd.concat(data_lst)
 df = df.loc[:, ~df.isna().all()]
 df = df.dropna(axis = 0)
 
-print(df.shape)
-df.head()
 
-
-# %%
-
-
-# %%
 alphas = np.arange(0, 1, 0.01)
 
-reject_naive = [(df['ATENaivepval'] < alpha).mean() for alpha in alphas]
-reject_boot = [(df['ATEBoot00pval'] < alpha).mean() for alpha in alphas]
-reject_boot12 = [(df['ATEBoot12pval'] < alpha).mean() for alpha in alphas]
-reject_oracle = [(df['ground_truthpval'] < alpha).mean() for alpha in alphas]
-
-# %%
-fig, axes = plt.subplots(1,len(df['nsim'].unique()), figsize=(16, 8), sharex=True)
-if len(df['nsim'].unique()) == 1:
-    axes = [axes]
-
-for idx, nsim in enumerate(df['nsim'].unique()):
-    df_nsim = df[df['nsim'] == nsim]
-    reject_naive_nsim = [(df_nsim['ATENaivepval'] < alpha).mean() for alpha in alphas]
-    reject_boot00_nsim = [(df_nsim['ATEBoot00pval'] < alpha).mean() for alpha in alphas]
-    reject_boot12_nsim = [(df_nsim['ATEBoot12pval'] < alpha).mean() for alpha in alphas]
-    reject_oracle_nsim = [(df_nsim['ground_truthpval'] < alpha).mean() for alpha in alphas]
-    
-    axes[idx].plot(alphas, reject_naive_nsim, label='Naive')
-    axes[idx].plot(alphas, reject_boot00_nsim, label='Boot')
-    axes[idx].plot(alphas, reject_boot12_nsim, label='Boot12')
-    axes[idx].plot(alphas, reject_oracle_nsim, label='Oracle')
-
-    axes[idx].set_title(f'nsim = {nsim}', fontsize=20)
-    axes[idx].set_ylabel('Type I Error Rate', fontsize=20)
-    axes[idx].legend(fontsize=20)
-
-plt.xlabel('Significance Level')
-fig.suptitle('Type I Error Rate for Ordinal Regression', fontsize=24)
-plt.tight_layout()
-plt.savefig('figs/type1error_naive_boot.png')
 
 
-# %%
 fig, axes = plt.subplots(1,len(df['nsim'].unique()), figsize=(16, 8), sharex=True)
 if len(df['nsim'].unique()) == 1:
     axes = [axes]
@@ -100,7 +53,7 @@ for idx, nsim in enumerate(["100","1000"]):
         df_boot = df_nsim.iloc[boot_idx]
         
         reject_naive_boot[b] = [(df_boot['ATENaivepval'] < alpha).mean() for alpha in alphas]
-        reject_boot00_boot[b] = [(df_boot['ATEBoot00pval'] < alpha).mean() for alpha in alphas]
+        reject_boot00_boot[b] = [(df_boot['ATEBayesBootstrappval'] < alpha).mean() for alpha in alphas]
         reject_oracle_boot[b] = [(df_boot['ground_truthpval'] < alpha).mean() for alpha in alphas]
     
     # Calculate means and confidence intervals
@@ -132,24 +85,8 @@ for idx, nsim in enumerate(["100","1000"]):
 
 fig.suptitle('Type I Error Rate for Naïve, Oracle, and Bayesian Bootstrap', fontsize=24)
 plt.tight_layout()
-plt.savefig('figs/type1error_naive_boot_binary.png')
+plt.savefig('figs/type1error_naive_boot_continuous.png')
 
-
-# %%
-# alphas = np.arange(0, 1, 0.01)
-
-# reject_naive = [(df['ATEBoot12pval'] < alpha).mean() for alpha in alphas]
-# reject_boot = [(df['ATEBoot11pval'] < alpha).mean() for alpha in alphas]
-
-# plt.plot(alphas, reject_naive, label = 'Naive')
-# plt.plot(alphas, reject_boot, label = 'Boot')
-# plt.plot(alphas, alphas, label = 'Nominal', linestyle='-')
-# plt.title('Type I Error Rate for Ordinal Regression')
-# plt.xlabel('Significance Level')
-# plt.ylabel('Type I Error Rate')
-# plt.suptitle(f'n = {len(alphas)}')
-# plt.legend()
-# plt.show()
 
 
 
