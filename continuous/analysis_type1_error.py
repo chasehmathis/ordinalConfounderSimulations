@@ -85,7 +85,7 @@ for idx, nsim in enumerate(["100","1000"]):
 
 fig.suptitle('Type I Error Rate for Naïve, Oracle, and Bayesian Bootstrap', fontsize=24)
 plt.tight_layout()
-plt.savefig('figs/type1error_naive_boot_continuous.png')
+plt.savefig('figs/type1error_naive_boot_cont.png')
 
 
 

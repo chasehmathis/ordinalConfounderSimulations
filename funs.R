@@ -1,3 +1,5 @@
+# HELPER FUNCTIONS FOR SIMULATIONS
+
 sample_params <- function(type, small){
 
     if(type == "d"){

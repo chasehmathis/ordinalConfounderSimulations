@@ -10,7 +10,8 @@ library(tidyr)
 
 # Data Import and Initial Processing
 # --------------------------------
-data.dir <- paste0("/nhanes2009/")
+root.dir <- "~/DukeUndergraduate/thesis/senior_thesis/casestudy/"
+data.dir <- paste0(root.dir, "nhanes2009/")
 
 # Function to read and process datasets
 process_dataset <- function(filename, filter_conditions = NULL) {
@@ -153,7 +154,8 @@ kcal <- datasets$diet$DR1TKCAL
 alc_grams <- datasets$diet$DR1TALCO
 
 # BMI 
-bmi <- datasets$bmi$BMXBMI
+bmi <- 1 * (datasets$bmi$BMXBMI > 25) + 1*(datasets$bmi$BMXBMI > 30)
+
 
 #Blood Pressure
 syst <- rowMeans(datasets$blood_pressure[, c("BPXSY1", "BPXSY2", "BPXSY3", "BPXSY4")], na.rm = TRUE)
