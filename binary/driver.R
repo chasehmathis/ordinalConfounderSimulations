@@ -9,6 +9,12 @@ n <- as.numeric(args[3])
 if(is.na(seed)){
   seed <- 1
 }
+if(is.na(nsim)){
+  nsim <- 10
+}
+if(is.na(n)){
+  n <- 100
+}
 set.seed(seed)
 options(warn = -1)
 library(tidyverse)
@@ -42,8 +48,8 @@ for(i in 1:nsim){
   bTY <- sample_params('b', 0);
   bUZ <- sample_params('b')
   bUW <- sample_params('b')
-  bZT <- sample_params('b')
-  bWY <- sample_params('b'); bWY <- 0
+  bZT <- sample_params('b'); bZT <- 0;
+  bWY <- sample_params('b'); bWY <- 0;
   uFam <- sample(c(1:5), 1)
   uFam <- 1
   sUU <- sqrt(duu)
@@ -56,11 +62,11 @@ for(i in 1:nsim){
   data <- generate_data(params)
   # partial correlation T, Y \mid U
   # Calculate partial correlation T, Y conditional on U
-  partial_corr <- partial.r(data, c("T", "Y"), c("U"))[1,2]
-  print(partial_corr)
+  partial_corr <- partial.r(data, c("Tstar", "Ystar"), c("U"))[1,2]
+  print(partial_corr > 0.75)
   while(abs(abs(partial_corr) - 1) < 1e-10){
     data <- generate_data(params)
-    partial_corr <- partial.r(data, c("T", "Y"), c("U"))[1,2]
+    partial_corr <- partial.r(data, c("Tstar", "Ystar"), c("U"))[1,2]
   }
   
   

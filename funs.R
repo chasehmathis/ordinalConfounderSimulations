@@ -136,7 +136,7 @@ generate_data <- function(params) {
     res_data <- cbind(res_data, Ystar)
     Y <- 1*(Ystar > 0)
   }else{
-    Y <- cbind(U, T, W) %*% c(bUY, bTY, bWY) + dyy
+    Y <- cbind(U, T, W) %*% c(bUY, bTY, bWY) + rnorm(n, 0, sqrt(dyy))
   }
   res_data <- cbind(res_data, Y)
   #as.integer(as.character(B_obs2))

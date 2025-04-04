@@ -70,7 +70,7 @@ df['diff_error'] = df['errorNaive'] - df['errorBB']
 # Calculate medians and confidence intervals
 medians = df.groupby(['nsim','corCategorries'])['diff_error'].median()
 
-
+import pdb; pdb.set_trace()
 cis = df.groupby(['nsim','corCategorries']).apply(lambda x: bootstrap((x['diff_error'],), np.median, confidence_level=0.95))
 
 # Create dataframe with median and CI bounds

@@ -8,6 +8,12 @@ n <- as.numeric(args[3])
 if(is.na(seed)){
   seed <- 1
 }
+if(is.na(nsim)){
+  nsim <- 10
+}
+if(is.na(n)){
+  n <- 100
+}
 set.seed(seed)
 options(warn = -1)
 library(tidyverse)
@@ -42,8 +48,8 @@ for(i in 1:nsim){
   bTY <- sample_params('b');
   bUZ <- sample_params('b')
   bUW <- sample_params('b')
-  bZT <- sample_params('b')
-  bWY <- sample_params('b')
+  bZT <- sample_params('b'); bZT <- 0;
+  bWY <- sample_params('b'); bWY <- 0;
   uFam <- sample(c(1:5), 1)
   uFam <- 1
   sUU <- sqrt(duu)

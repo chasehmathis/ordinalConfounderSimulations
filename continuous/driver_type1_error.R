@@ -43,8 +43,8 @@ for(i in 1:nsim){
   bTY <- sample_params('b'); bTY <- 0
   bUZ <- sample_params('b')
   bUW <- sample_params('b')
-  bZT <- sample_params('b')
-  bWY <- sample_params('b')
+  bZT <- sample_params('b'); bZT <- 0;
+  bWY <- sample_params('b'); bWY <- 0;
   
   uFam <- sample(c(1:5), 1)
   uFam <- 1
